@@ -1,0 +1,4 @@
+R01 | Laptop | 90000
+R02 | Projector | 580000
+R03 | Projector | 400000
+R04 | Projector | 245000
