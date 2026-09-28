@@ -1,6 +1,3 @@
-
-
-
 package lw02.Unguided;
 
 import java.util.*;
@@ -9,101 +6,104 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Declare Linked list
-        LinkedList<String[]> request = new LinkedList<>();
-        LinkedList<String[]> books = new LinkedList<>();
+        LinkedList<String[]> requestList = new LinkedList<>();
         LinkedList<String[]> bookList = new LinkedList<>();
+        LinkedList<String[]> memberList = new LinkedList<>();
 
         Queue<String[]> queue = new LinkedList<>();
-        Stack<String[]> failed = new Stack<>();
+        Stack<String[]> failedStack = new Stack<>();
 
-        // Read File
+        bookList.add(new String[]{"Kalkulus", "2"});
+        bookList.add(new String[]{"Fisika", "1"});
+        bookList.add(new String[]{"Statistika", "2"});
+
         Scanner scanner = new Scanner(
-                Main.class.getResourceAsStream("borrowing.txt"));
-
-        // Uraian Parse ( Kalku, fisika, stat)
-       bookList.add(new String[]{"Kalkulus", "2"});
-       bookList.add(new String[]{"Fisika", "1"});
-       bookList.add(new String[]{"Statistika", "2"});
+                Main.class.getResourceAsStream("src/lw02/Unguided/borrowing.txt"));
 
         while (scanner.hasNext()) {
-            String[] request = new String[3];
+            String[] request = new String[2];
             request[0] = scanner.next();
             request[1] = scanner.next();
-            request[2] = scanner.next();
-            request.add(request);
+            requestList.add(request);
+
+            String name = request[0];
+            boolean foundMember = false;
+            for (String[] member : memberList) {
+                if (member[0].equals(name)) {
+                    foundMember = true;
+                    break;
+                }
+            }
+            if (!foundMember) {
+                memberList.add(new String[] { name, "0" });
+            }
         }
 
         scanner.close();
-System.out.println(books);
-    //     // LinkedList -> Queue
-    //     queue.addAll(request);
 
-    //     // Process transactions using FIFO
-    //     while (!queue.isEmpty()) {
+       
+        queue.addAll(requestList);
 
-    //         String[] booklist = queue.poll();
+       
+        LinkedList<String[]> successList = new LinkedList<>();
+        int MAX_BORROW = 2;
 
-    //         String name = transaction[0];
-    //         String type = transaction[1];
-    //         int amount = Integer.parseInt(transaction[2]);
+     
+        while (!queue.isEmpty()) {
+            String[] request = queue.poll();
+            String name = request[0];
+            String requestedBook = request[1];
 
-    //         // Find customer
-    //         String[] customer = null;
+          
+            String[] targetBook = null;
+            for (String[] book : bookList) {
+                if (book[0].equals(requestedBook)) {
+                    targetBook = book;
+                    break;
+                }
+            }
 
-    //         for (String[] data : customers) {
-    //             if (data[0].equals(name)) {
-    //                 customer = data;
-    //                 break;
-    //             }
-    //         }
+            // Cari data member
+            String[] targetMember = null;
+            for (String[] member : memberList) {
+                if (member[0].equals(name)) {
+                    targetMember = member;
+                    break;
+                }
+            }
 
-    //         // Add new customer if not found
-    //         if (customer == null) {
-    //             customer = new String[] { name, "0" };
-    //             customers.add(customer);
-    //         }
+            int stock = Integer.parseInt(targetBook[1]);
+            int borrowedCount = Integer.parseInt(targetMember[1]);
 
-    //         int balance = Integer.parseInt(customer[1]);
+          
+            if (stock > 0 && borrowedCount < MAX_BORROW) {
+             
+                targetBook[1] = String.valueOf(stock - 1);
+                targetMember[1] = String.valueOf(borrowedCount + 1);
+                successList.add(request);
+            } else {
+             
+                failedStack.push(request);
+            }
+        }
 
-    //         if (type.equals("DEPOSIT")) {
+      
+        System.out.println("=== Successfully Processed Requests ===");
+        for (String[] success : successList) {
+            System.out.println(success[0] + " " + success[1]);
+        }
 
-    //             balance += amount;
-    //             customer[1] = String.valueOf(balance);
+       
+        System.out.println("\n=== Remaining Book Stock ===");
+        for (String[] book : bookList) {
+            System.out.println(book[0] + ": " + book[1]);
+        }
 
-    //         } else if (type.equals("WITHDRAW")) {
-
-    //             if (amount <= balance) {
-
-    //                 balance -= amount;
-    //                 customer[1] = String.valueOf(balance);
-
-    //             } else {
-
-    //                 // Failed transaction -> Stack
-    //                 failed.push(transaction);
-    //             }
-    //         }
-    //     }
-
-    //     // Final balances
-    //     System.out.println("\n=== Final Balances ===");
-
-    //     for (String[] customer : customers) {
-    //         System.out.println(customer[0] + " : " + customer[1]);
-    //     }
-
-    //     // Failed transactions
-    //     System.out.println("\n=== Failed Transactions ===");
-
-    //     while (!failed.isEmpty()) {
-
-    //         String[] transaction = failed.pop();
-
-    //         System.out.println(
-    //                 transaction[0] + " " +
-    //                         transaction[1] + " " +
-    //                         transaction[2]);
-    //     }
+    
+        System.out.println("\n=== Failed Requests ===");
+        while (!failedStack.isEmpty()) {
+            String[] failed = failedStack.pop();
+            System.out.println(failed[0] + " " + failed[1]);
+        }
     }
 }
