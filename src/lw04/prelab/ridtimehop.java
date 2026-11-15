@@ -1,4 +1,4 @@
-package lwo4.prelab;
+package lw04.prelab;
 
 import java.io.File;
 import java.io.FileNotFoundException;
