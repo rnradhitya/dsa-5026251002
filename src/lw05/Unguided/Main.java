@@ -1,7 +1,4 @@
 package lw05.Unguided;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
@@ -37,12 +34,12 @@ public class Main {
             order.add(current);
 
             for (int next = 0; next < size; next++) {
-                
+
                 if (graph[current][next] > 0 && !visited.contains(next)) {
                     visited.add(next);
                     bfsLevel[next] = bfsLevel[current] + 1;
-                    bfsPrev[next] = current;               
-                    queue.add(next);                      
+                    bfsPrev[next] = current;
+                    queue.add(next);
                 }
             }
         }
@@ -63,7 +60,6 @@ public class Main {
             for (int i = 0; i < order.size(); i++) {
                 int hub = order.get(i);
 
-            
                 if (bfsLevel[hub] == level) {
                     if (!first) {
                         System.out.print(", ");
@@ -98,7 +94,7 @@ public class Main {
                 break;
             }
 
-            visited[current] = true; 
+            visited[current] = true;
 
             for (int next = 0; next < size; next++) {
                 if (graph[current][next] > 0
@@ -106,10 +102,9 @@ public class Main {
 
                     int newDist = dist[current] + graph[current][next];
 
-                
                     if (newDist < dist[next]) {
                         dist[next] = newDist;
-                        dijkstraPrev[next] = current; 
+                        dijkstraPrev[next] = current;
                     }
                 }
             }
@@ -122,7 +117,7 @@ public class Main {
         int closest = -1;
 
         for (int i = 0; i < size; i++) {
-           
+
             if (!visited[i] && dist[i] < min) {
                 min = dist[i];
                 closest = i;
@@ -139,7 +134,7 @@ public class Main {
         if (current == start) {
             path = new ArrayList<>();
         } else {
-            
+
             path = buildPath(prev[current], prev, start);
         }
 
@@ -147,12 +142,11 @@ public class Main {
         return path;
     }
 
-   
     static int pathTime(List<Integer> path) {
         int total = 0;
 
         for (int i = 0; i < path.size() - 1; i++) {
-            
+
             total += graph[path.get(i)][path.get(i + 1)];
         }
 
@@ -180,12 +174,9 @@ public class Main {
                 + " | Time: " + pathTime(path) + " min");
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-       
-    
-        Scanner sc = new Scanner(new File("src/lw05/Unguided/delivery.txt"));
-   
+    public static void main(String[] args) {
 
+        Scanner sc = new Scanner(Main.class.getResourceAsStream("delivery.txt"));
 
         size = sc.nextInt();
         names = new String[size];
@@ -206,28 +197,25 @@ public class Main {
         int dest = sc.nextInt();
         sc.close();
 
-       
         List<Integer> bfsOrder = bfs(start);
         System.out.print("=== Hub Levels from " + names[start] + " ===");
         printLevels(bfsOrder);
 
-        
         List<Integer> fewestStopsPath = buildPath(dest, bfsPrev, start);
         printSummary("Fewest Stops Route from " + names[start] + " to " + names[dest], fewestStopsPath);
 
-        
         dijkstraAlg(start);
         List<Integer> fastestPath = buildPath(dest, dijkstraPrev, start);
         printSummary("Fastest Route from " + names[start] + " to " + names[dest], fastestPath);
 
-       
         System.out.println("=== Comparison ===");
         if (fewestStopsPath.equals(fastestPath)) {
             System.out.println("Both routes are the same.");
         } else {
             int timeSaved = pathTime(fewestStopsPath) - pathTime(fastestPath);
             int extraStops = (fastestPath.size() - 1) - (fewestStopsPath.size() - 1);
-            System.out.println("The fastest route saves " + timeSaved + " min but needs " + extraStops + " more stops.");
+            System.out
+                    .println("The fastest route saves " + timeSaved + " min but needs " + extraStops + " more stops.");
         }
     }
 }
