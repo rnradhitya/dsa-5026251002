@@ -139,7 +139,7 @@ public class Main {
         if (current == start) {
             path = new ArrayList<>();
         } else {
-            // Blank 10: rekursif mundur ke hub sebelumnya
+            
             path = buildPath(prev[current], prev, start);
         }
 
