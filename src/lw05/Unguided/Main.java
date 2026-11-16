@@ -1,121 +1,233 @@
-// package lw05.Unguided;
+package lw05.Unguided;
 
-// import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
-// public class Main {
-//     static int[][] graph;
-//     static int size;
-//     static String[] names;
+public class Main {
 
-//     // Adds a two-way walkway (complete, do not change)
-//     static void addEdge(int from, int to, int minutes) {
-//         graph[from][to] = minutes;
-//         graph[to][from] = minutes;
-//     }
+    static int[][] graph;
+    static int size;
+    static String[] names;
 
-//     static List<Integer> bfs(int start) {
-//         List<Integer> order = new ArrayList<>();
-//         Set<Integer> visited = new HashSet<>();
-//         Queue<Integer> queue = new LinkedList<>();
-//         queue.add(start);
-//         visited.add(start);
-//         while (!queue.isEmpty()) {
-//             int current = _______;                  // take the building at the front of the queue
-//             order.add(current);
-//             for (int next = 0; next < size; next++) {
-//                 if (_______) {                          // next is a neighbour that has not been visited
-//                     visited.add(next);
-//                     _______;                        // put next at the back of the queue
-//                 }
-//             }
-//         }
-//         return order;package lw05.Unguided;
+    static int[] bfsLevel;
+    static int[] bfsPrev;
+    static int[] dijkstraPrev;
 
-// public class Main {
+    // Adds a two-way flight corridor (complete, do not change)
+    static void addEdge(int from, int to, int minutes) {
+        graph[from][to] = minutes;
+        graph[to][from] = minutes;
+    }
+
+    // BFS: finds the route with the fewest stops/hops
+    static List<Integer> bfs(int start) {
+        List<Integer> order = new ArrayList<>();
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+
+        bfsLevel = new int[size];
+        bfsPrev = new int[size];
+
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            order.add(current);
+
+            for (int next = 0; next < size; next++) {
+                
+                if (graph[current][next] > 0 && !visited.contains(next)) {
+                    visited.add(next);
+                    bfsLevel[next] = bfsLevel[current] + 1;
+                    bfsPrev[next] = current;               
+                    queue.add(next);                      
+                }
+            }
+        }
+
+        return order;
+    }
+
+    // Prints hubs level by level
+    static void printLevels(List<Integer> order) {
+        int lastLevel = bfsLevel[order.get(order.size() - 1)];
+
+        for (int level = 0; level <= lastLevel; level++) {
+            System.out.println();
+            System.out.print("Level " + level + ": ");
+
+            boolean first = true;
+
+            for (int i = 0; i < order.size(); i++) {
+                int hub = order.get(i);
+
+            
+                if (bfsLevel[hub] == level) {
+                    if (!first) {
+                        System.out.print(", ");
+                    }
+
+                    System.out.print(names[hub]);
+                    first = false;
+                }
+            }
+        }
+
+        System.out.println();
+    }
+
+    // Dijkstra: finds the fastest route
+    static void dijkstraAlg(int start) {
+        int[] dist = new int[size];
+
+        for (int i = 0; i < size; i++) {
+            dist[i] = Integer.MAX_VALUE;
+        }
+
+        dist[start] = 0;
+
+        boolean[] visited = new boolean[size];
+        dijkstraPrev = new int[size];
+
+        for (int i = 0; i < size; i++) {
+            int current = findTheNextNode(visited, dist);
+
+            if (current == -1) {
+                break;
+            }
+
+            visited[current] = true; 
+
+            for (int next = 0; next < size; next++) {
+                if (graph[current][next] > 0
+                        && !visited[next]) {
+
+                    int newDist = dist[current] + graph[current][next];
+
+                
+                    if (newDist < dist[next]) {
+                        dist[next] = newDist;
+                        dijkstraPrev[next] = current; 
+                    }
+                }
+            }
+        }
+    }
+
+    // Finds the unvisited hub with the smallest distance
+    static int findTheNextNode(boolean[] visited, int[] dist) {
+        int min = Integer.MAX_VALUE;
+        int closest = -1;
+
+        for (int i = 0; i < size; i++) {
+           
+            if (!visited[i] && dist[i] < min) {
+                min = dist[i];
+                closest = i;
+            }
+        }
+
+        return closest;
+    }
+
+    // Rebuilds the route using prev[]
+    static List<Integer> buildPath(int current, int[] prev, int start) {
+        List<Integer> path;
+
+        if (current == start) {
+            path = new ArrayList<>();
+        } else {
+            
+            path = buildPath(prev[current], prev, start);
+        }
+
+        path.add(current);
+        return path;
+    }
+
+   
+    static int pathTime(List<Integer> path) {
+        int total = 0;
+
+        for (int i = 0; i < path.size() - 1; i++) {
+            
+            total += graph[path.get(i)][path.get(i + 1)];
+        }
+
+        return total;
+    }
+
+    // Prints the route (complete, do not change)
+    static void printPath(List<Integer> path) {
+        for (int i = 0; i < path.size(); i++) {
+            System.out.print(names[path.get(i)]);
+
+            if (i < path.size() - 1) {
+                System.out.print(" -> ");
+            }
+        }
+        System.out.println();
+    }
+
+    // Prints route information (complete, do not change)
+    static void printSummary(String title, List<Integer> path) {
+        System.out.println("=== " + title + " ===");
+        printPath(path);
+
+        System.out.println("Stops: " + (path.size() - 1)
+                + " | Time: " + pathTime(path) + " min");
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+       
     
-// }
+        Scanner sc = new Scanner(new File("src/lw05/Unguided/delivery.txt"));
+   
 
-//     }
 
-//     static Set<Integer> dfsVisited = new HashSet<>();   // shared by every recursive call of dfs()
-//     static List<Integer> dfsOrder = new ArrayList<>();  // shared by every recursive call of dfs()
+        size = sc.nextInt();
+        names = new String[size];
+        for (int i = 0; i < size; i++) {
+            names[i] = sc.next();
+        }
 
-//     static void dfs(int current) {
-//         _______;                                    // mark current as visited
-//         dfsOrder.add(current);
-//         for (int next = 0; next < size; next++) {
-//             if (graph[current][next] > 0 && !dfsVisited.contains(next)) {
-//                 _______;                            // go deeper from next
-//             }
-//         }
-//     }
+        int edges = sc.nextInt();
+        graph = new int[size][size];
+        for (int i = 0; i < edges; i++) {
+            int v1 = sc.nextInt();
+            int v2 = sc.nextInt();
+            int minutes = sc.nextInt();
+            addEdge(v1, v2, minutes);
+        }
 
-//     static void dijkstraAlg(int start, int dest) {
-//         int[] dist = new int[size];
-//         for (int i = 0; i < size; i++) {
-//             dist[i] = Integer.MAX_VALUE;
-//         }
-//         dist[start] = 0;
-//         boolean[] visited = new boolean[size];
-//         int[] prev = new int[size];
+        int start = sc.nextInt();
+        int dest = sc.nextInt();
+        sc.close();
 
-//         for (int i = 0; i < size; i++) {
-//             int current = findTheNextNode(visited, dist);
-//             _______;                                // mark current as visited
-//             for (int next = 0; next < size; next++) {
-//                 int newDist = dist[current] + graph[current][next];
-//                 if (graph[current][next] > 0 && _______) {   // the new distance is shorter
-//                     dist[next] = newDist;
-//                     _______;                        // remember that next is reached from current
-//                 }
-//             }
-//         }
+       
+        List<Integer> bfsOrder = bfs(start);
+        System.out.print("=== Hub Levels from " + names[start] + " ===");
+        printLevels(bfsOrder);
 
-//         System.out.println("=== Shortest Time from " + names[start] + " ===");
-//         for (int i = 0; i < size; i++) {
-//             System.out.println(names[i] + " : " + dist[i] + " min");
-//         }
-//         System.out.println("=== Shortest Route from " + names[start] + " to " + names[dest] + " ===");
-//         route(dest, start, prev);
-//         System.out.println();
-//         System.out.println("Total time: " + dist[dest] + " min");
-//     }
+        
+        List<Integer> fewestStopsPath = buildPath(dest, bfsPrev, start);
+        printSummary("Fewest Stops Route from " + names[start] + " to " + names[dest], fewestStopsPath);
 
-//     // Helper of dijkstraAlg(): finds the unvisited building with the smallest distance
-//     static int findTheNextNode(boolean[] visited, int[] dist) {
-//         int min = Integer.MAX_VALUE;
-//         int closest = -1;
-//         for (int i = 0; i < size; i++) {
-//             if (_______) {                          // i is unvisited and closer than min
-//                 min = dist[i];
-//                 closest = i;
-//             }
-//         }
-//         return closest;
-//     }
+        
+        dijkstraAlg(start);
+        List<Integer> fastestPath = buildPath(dest, dijkstraPrev, start);
+        printSummary("Fastest Route from " + names[start] + " to " + names[dest], fastestPath);
 
-//     // Helper of dijkstraAlg(): prints the route from start to current
-//     static void route(int current, int start, int[] prev) {
-//         if (current == start) {
-//             System.out.print(names[current]);
-//         } else {
-//             _______;                                // print the route up to the previous building
-//             System.out.print(" -> " + names[current]);
-//         }
-//     }
-
-//     // Prints the buildings as A -> B -> C (complete, do not change)
-//     static void printPath(List<Integer> list) {
-//         for (int i = 0; i < list.size(); i++) {
-//             System.out.print(names[list.get(i)]);
-//             if (i < list.size() - 1) {
-//                 System.out.print(" -> ");
-//             }
-//         }
-//         System.out.println();
-//     }
-
-//     public static void main(String[] args) {
-//         // Write the main method yourself
-//     }
-// }
+       
+        System.out.println("=== Comparison ===");
+        if (fewestStopsPath.equals(fastestPath)) {
+            System.out.println("Both routes are the same.");
+        } else {
+            int timeSaved = pathTime(fewestStopsPath) - pathTime(fastestPath);
+            int extraStops = (fastestPath.size() - 1) - (fewestStopsPath.size() - 1);
+            System.out.println("The fastest route saves " + timeSaved + " min but needs " + extraStops + " more stops.");
+        }
+    }
+}
