@@ -37,7 +37,7 @@ public class Main {
             order.add(current);
 
             for (int next = 0; next < size; next++) {
-                // Blank 1: cek apakah terhubung dan belum dikunjungi
+                
                 if (graph[current][next] > 0 && !visited.contains(next)) {
                     visited.add(next);
                     bfsLevel[next] = bfsLevel[current] + 1;
@@ -147,12 +147,12 @@ public class Main {
         return path;
     }
 
-    // Calculates the total travel time
+   
     static int pathTime(List<Integer> path) {
         int total = 0;
 
         for (int i = 0; i < path.size() - 1; i++) {
-            // Blank 11: tambahkan bobot waktu antar dua hub berurutan
+            
             total += graph[path.get(i)][path.get(i + 1)];
         }
 
@@ -181,8 +181,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        // Membaca file delivery.txt
-     //   Scanner sc = new Scanner(new File("delivery.txt"));
+       
+    
         Scanner sc = new Scanner(new File("src/lw05/Guided/delivery.txt"));
    
 
